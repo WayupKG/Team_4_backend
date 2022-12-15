@@ -10,8 +10,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = eval(os.getenv('DEBUG'))
 
-SITE_IN_DEV = eval(os.getenv('SITE_IN_DEV'))
-
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(' ')
 
 SITE_ID = 1
