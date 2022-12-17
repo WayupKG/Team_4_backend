@@ -1,12 +1,13 @@
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 
 from datetime import timedelta
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(dotenv_path=os.path.join(BASE_DIR, '.env'))
+load_dotenv(dotenv_path=BASE_DIR / '.env')
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
@@ -67,7 +68,7 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": os.environ.get("DATABASE_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("DATABASE_NAME", os.path.join(BASE_DIR, 'db.sqlite3')),
+        "NAME": os.environ.get("DATABASE_NAME", BASE_DIR / 'db.sqlite3'),
         "USER": os.environ.get("DATABASE_USER", "user"),
         "PASSWORD": os.environ.get("DATABASE_PASSWORD", "password"),
         "HOST": os.environ.get("DATABASE_HOST", "localhost"),
@@ -104,12 +105,14 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 STATIC_URL = '/static/'
+# STATIC_ROOT = 'static'
+STATIC_DIR = BASE_DIR / 'static'
+STATICFILES_DIRS = [STATIC_DIR]
 
 # Default primary key field type
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
