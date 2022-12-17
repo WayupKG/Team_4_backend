@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "team-4-backend"
+version = "0.1.0"
+description = "Система бронирования медицинских услуг"
+authors = ["wayupkg <adikgk232323@gmail.com>"]
+readme = "README.md"
+packages = [{include = "team_4_backend"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+django = "3.2"
+djangorestframework = "^3.14.0"
+djangorestframework-simplejwt = "^5.2.2"
+drf-yasg = "^1.21.4"
+environs = "^9.5.0"
+pillow = "^9.3.0"
+psycopg2-binary = "^2.9.5"
+redis = "^4.4.0"
+celery = "^5.2.7"
+coverage = "^6.5.0"
+six = "^1.16.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
