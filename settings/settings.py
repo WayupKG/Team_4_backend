@@ -30,7 +30,8 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     # Create app
-    'apps.account'
+    'apps.account',
+    'apps.reception.apps.ReceptionConfig'
 ]
 
 MIDDLEWARE = [
