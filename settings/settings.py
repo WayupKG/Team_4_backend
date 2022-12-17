@@ -1,6 +1,8 @@
 import os
 from dotenv import load_dotenv
 
+from datetime import timedelta
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -22,6 +24,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+    'drf_yasg',
+    'rest_framework_simplejwt',
+
+    'apps.account'
+
+
 ]
 
 MIDDLEWARE = [
@@ -102,8 +112,29 @@ STATIC_URL = '/static/'
 # Default primary key field type
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_DIR = MEDIA_ROOT
-MEDIA_DIRS = [MEDIA_DIR]
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'account.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    #  'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    #  'PAGE_SIZE':4,
+    #  'SEARCH_PARAM': 'q'
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'USER_ID_FIELD': 'username',
+    'AUTH_HEADER_TYPES': ('Bearer', 'Token'),
+}
 
 # Email Settings
 EMAIL_USE_TLS = True
