@@ -4,30 +4,26 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 from .tasks import send_activation_code
-
+from .services.validations import email_validator
 
 User = get_user_model()
 
-def email_validator(email):
-    if not User.objects.filter(email=email).exists():
-        raise serializers.ValidationError('User with this email does not exist')
-    return email
 
-
-class UserRegistrationSerializer(serializers.ModelSerializer):
-    password_confirm = serializers.CharField(max_length=128, required = True)
+class UserSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(max_length=128, read_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'user_type', 'password', 'password_confirm')
+        fields = ('email', 'first_name', 'last_name', 'phone')
 
-    def validate_username(self, username):
-        if User.objects.filter(username=username).exists():
-            raise serializers.ValidationError(
-                'This username is already taken, please choose another'
-                )
-        return username    
- 
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    password_confirm = serializers.CharField(max_length=128, required=True)
+
+    class Meta:
+        model = User
+        fields = ('email', 'first_name', 'last_name', 'phone', 'password', 'password_confirm')
+
     def validate_email(self, email):
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError(
@@ -46,18 +42,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(**validated_data)
         user.create_activation_code()
         send_activation_code.delay(user.email, user.activation_code)
-        first = validated_data['first_name']
-        first.capitalize()
-        last = validated_data['last_name']
-        last.capitalize()
+        validated_data.get('first_name').capitalize()
+        validated_data.get('last_name').capitalize()
         return user
 
-        
+
 class PasswordChangeSerializer(serializers.Serializer):
     old_password = serializers.CharField(max_length=128, required=True)
     new_password = serializers.CharField(max_length=128, required=True)
     new_pass_confirm = serializers.CharField(max_length=128, required=True)
-
 
     def validate_old_password(self, old_password):
         user = self.context.get('request').user
@@ -82,13 +75,8 @@ class PasswordChangeSerializer(serializers.Serializer):
 
 
 class RestorePasswordSerializer(serializers.Serializer):
-    email = serializers.EmailField(
-        required = True,
-        max_length = 255,
-        validators = [email_validator]
-    )
-
-
+    email = serializers.EmailField(required=True, max_length=255,
+                                   validators=[email_validator])
 
     def send_code(self):
         email = self.validated_data.get('email')
@@ -101,22 +89,21 @@ class RestorePasswordSerializer(serializers.Serializer):
             recipient_list=[email]
         )
 
+
 class SetRestorePasswordSerializer(serializers.Serializer):
     email = serializers.EmailField(
-        required = True,
-        max_length = 255,
-        validators = [email_validator]
+        required=True,
+        max_length=255,
+        validators=[email_validator]
     )
-    code = serializers.CharField(min_length=1, max_length=8, required =True)
-    new_password = serializers.CharField(max_length = 128, required = True)
-    new_pass_confirm = serializers.CharField(max_length = 128, required = True)
-
-    def validate_code(self, code):
-        if not User.objects.filter(activation_code=code).exists():
-            raise serializers.ValidationError('Wrong code')
-        return code
+    code = serializers.CharField(min_length=1, max_length=8, required=True)
+    new_password = serializers.CharField(max_length=128, required=True)
+    new_pass_confirm = serializers.CharField(max_length=128, required=True)
 
     def validate(self, attrs):
+        if not User.objects.filter(email=attrs.get('email'),
+                                   activation_code=attrs.get('code')).exists():
+            raise serializers.ValidationError('Wrong code')
         new_password = attrs.get('new_password')
         new_pass_confirm = attrs.get('new_pass_confirm')
         if new_password != new_pass_confirm:
