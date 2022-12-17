@@ -37,6 +37,8 @@ __pycache__/
 .pyc
 *.pyc
 
+static/*
+
 media/*
 !*media/.gitkeep
 
