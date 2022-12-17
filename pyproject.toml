@@ -10,7 +10,6 @@ packages = [{include = "team_4_backend"}]
 python = "^3.9"
 django = "3.2"
 djangorestframework = "^3.14.0"
-djangorestframework-simplejwt = "^5.2.2"
 drf-yasg = "^1.21.4"
 environs = "^9.5.0"
 pillow = "^9.3.0"
@@ -19,6 +18,7 @@ redis = "^4.4.0"
 celery = "^5.2.7"
 coverage = "^6.5.0"
 six = "^1.16.0"
+djoser = "^2.1.0"
 
 
 [build-system]
