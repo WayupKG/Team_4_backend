@@ -13,9 +13,13 @@ class UserManager(BaseUserManager):
     def create_user(self, email, password, **extra_fields):
         return self._create(email, password, **extra_fields)
 
+    def create_doctor(self, email, password, **extra_fields):
+        extra_fields.setdefault('user_type', 'doctor')
+        return self._create(email, password, **extra_fields)
+
     def create_superuser(self, email, password, **extra_fields):
+        extra_fields.setdefault('user_type', 'admin')
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_active', True)
         return self._create(email, password, **extra_fields)
 
