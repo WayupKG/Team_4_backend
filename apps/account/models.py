@@ -18,10 +18,10 @@ class User(AbstractBaseUser):
     user_type = models.CharField(
         max_length=10,
         choices=TYPE_CHOICES,
-        default='user') 
+        default='user')
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     activation_code = models.CharField(max_length=8, blank=True)
     
     objects = UserManager()
