@@ -54,3 +54,13 @@ class User(AbstractBaseUser):
             self.create_activation_code()
         self.activation_code = code 
         self.save()
+
+
+class Comment(models.Model):
+    user = models.ForeignKey('self', on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    content = models.TextField()
+    doctor = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user
