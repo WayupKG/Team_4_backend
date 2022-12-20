@@ -56,11 +56,28 @@ class User(AbstractBaseUser):
         self.save()
 
 
-class Comment(models.Model):
-    user = models.ForeignKey('self', on_delete=models.CASCADE)
-    date = models.DateField(auto_now_add=True)
+class Feedback(models.Model):
     content = models.TextField()
-    doctor = models.ForeignKey(User, on_delete=models.CASCADE)
+    patient = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name='patient_feedback',
+        null=True
+    )
+    doctor = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        related_name='feedback',
+        null=True
+    )
+    replies = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.user
+        return f'{self.patient}'
+
+

@@ -5,16 +5,31 @@ from django.conf import settings
 
 from .tasks import send_activation_code
 from .services.validations import email_validator
+from .models import Feedback
+
 
 User = get_user_model()
 
 
+class FeedbackSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(read_only=True)
+    class Meta:
+        model = Feedback
+        fields = [
+            'content',
+            'patient',
+            'doctor',
+            'replies',
+            'created_at'
+        ]
+
+
 class UserSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=128, read_only=True)
-
+    feedback = FeedbackSerializer(many=True, read_only=True)
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone')
+        fields = ('email', 'first_name', 'last_name', 'phone', 'feedback')
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -119,3 +134,4 @@ class SetRestorePasswordSerializer(serializers.Serializer):
         user.set_password(new_password)
         user.activation_code = ''
         user.save()
+
