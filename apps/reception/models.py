@@ -1,6 +1,5 @@
 from django.db import models
 from settings import settings
-from django.utils.timezone import now
 
 
 class Date_reception(models.Model):
@@ -31,11 +30,12 @@ class Reception(models.Model):
     description = models.CharField(
         'Text',
         max_length=300,
+        blank=True,
         null=True
     )
     date_reception = models.ForeignKey(
         'Date_reception',
         on_delete=models.CASCADE
     )
-    created_at = models.DateTimeField('Created_time', default=now)
-    updated_at = models.DateTimeField('Update_time', blank=True, null=True)
+    created_at = models.DateTimeField('Created_time', auto_now_add=True)
+    updated_at = models.DateTimeField('Update_time', auto_now=True)
