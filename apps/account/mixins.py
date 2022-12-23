@@ -8,3 +8,10 @@ class UserMixinSet(mixins.RetrieveModelMixin,
                    GenericViewSet):
     """Для создание CRUD user"""
     pass
+
+
+class DoctorMixinSet(mixins.RetrieveModelMixin,
+                     mixins.ListModelMixin,
+                     GenericViewSet):
+    """Для создание CRUD doctor"""
+    pass
