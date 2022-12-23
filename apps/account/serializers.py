@@ -1,8 +1,11 @@
 from rest_framework import serializers
+
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db.models import Avg
 
+from .models import Feedback, Specialty
 from .tasks import send_activation_code
 from .services.validations import email_validator
 
@@ -10,11 +13,59 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(max_length=128, read_only=True)
+    email = serializers.EmailField(label='email', read_only=True)
+    user_type = serializers.CharField(label='user_type', read_only=True)
 
     class Meta:
         model = User
-        fields = ('email', 'first_name', 'last_name', 'phone')
+        fields = ('email', 'first_name', 'last_name', 'phone', 'avatar', 'user_type')
+
+
+class DoctorSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(label='email', read_only=True)
+    user_type = serializers.CharField(label='user_type', read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'get_full_name', 'specialty',
+                  'experience', 'phone', 'avatar', 'user_type')
+
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rating = instance.feedbacks.aggregate(Avg('rating'))['rating__avg']
+        if rating:
+            rep['rating'] = round(rating, 1)
+        else:
+            rep['rating'] = 0.0
+        return rep
+
+
+class SpecialtySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Specialty
+        fields = '__all__'
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+    doctor = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Feedback
+        fields = "__all__"
+
+    def validate(self, attrs):
+        rating = attrs.get('rating')
+        if rating not in (1, 2, 3, 4, 5):
+            raise serializers.ValidationError(
+                'Wrong value! Rating must be between 1 and 5'
+            )
+        return attrs
+
+    def update(self, instance, validated_data):
+        instance.rating = validated_data.get('rating')
+        instance.save()
+        return super().update(instance, validated_data)
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
