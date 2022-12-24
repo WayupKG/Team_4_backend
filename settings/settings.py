@@ -30,6 +30,7 @@ INSTALLED_APPS = [
 
     # Create app
     'apps.account',
+    'apps.reception.apps.ReceptionConfig'
 ]
 
 MIDDLEWARE = [
