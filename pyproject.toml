@@ -19,6 +19,10 @@ celery = "^5.2.7"
 coverage = "^6.5.0"
 six = "^1.16.0"
 djoser = "^2.1.0"
+ruamel-yaml-clib = "^0.2.7"
+transliterate = "^1.10.2"
+django-cleanup = "^6.0.0"
+django-imagekit = "^4.1.0"
 
 
 [build-system]
