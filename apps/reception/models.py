@@ -21,7 +21,7 @@ class Reception(models.Model):
                                on_delete=models.CASCADE)
     description = models.TextField('Description')
     date = models.DateField(verbose_name='date reception')
-    time = models.TimeField('', max_length=28, choices=TIME_CHOICES)
+    time = models.CharField('time reception', max_length=28, choices=TIME_CHOICES)
     created_at = models.DateTimeField('Created time', auto_now_add=True)
     updated_at = models.DateTimeField('Updated time', auto_now=True)
 

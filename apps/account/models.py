@@ -2,12 +2,16 @@ from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.utils.crypto import get_random_string
 
+from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFill
+
 from .managers import UserManager
 from .services import constants as cns
+from .services.upload_to_file import avatar_img
 
 
 class Specialty(models.Model):
-    title = models.CharField(max_length=200, unique=True)
+    title = models.CharField(max_length=255, unique=True)
 
     objects = models.Manager()
 
@@ -15,8 +19,8 @@ class Specialty(models.Model):
         return str(self.title)
 
     class Meta:
-        verbose_name = 'Специальность'
-        verbose_name_plural = 'Специальности'
+        verbose_name = 'Specialty'
+        verbose_name_plural = 'Specialties'
 
 
 class User(AbstractBaseUser):
@@ -29,13 +33,12 @@ class User(AbstractBaseUser):
     first_name = models.CharField('First_name', max_length=50)
     last_name = models.CharField('Last_name', max_length=50)
     phone = models.CharField('Phone', max_length=50)
-    specialty = models.ForeignKey(to=Specialty, on_delete=models.CASCADE, related_name='doctors', null=True, blank=True)
-    experience = models.IntegerField(default=1)
-    avatar = models.ImageField(upload_to='doctor_avatar')
-    user_type = models.CharField(
-        max_length=10,
-        choices=TYPE_CHOICES,
-        default='user')
+    specialty = models.ForeignKey(to=Specialty, on_delete=models.CASCADE,
+                                  related_name='doctors', null=True, blank=True)
+    experience = models.IntegerField(null=True, blank=True)
+    avatar = ProcessedImageField(verbose_name='avatar', upload_to=avatar_img,
+                                 format='webp', options={'quality': 90})
+    user_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default=cns.USER)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
