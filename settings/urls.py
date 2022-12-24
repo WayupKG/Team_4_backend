@@ -7,6 +7,7 @@ from djoser import views as djoser_view
 
 urlpatterns_api_v1 = [
     path('', include('apps.account.urls')),
+    path('', include('apps.reception.urls')),
     path('auth/login/', djoser_view.TokenCreateView.as_view(), name='login'),
     path('auth/logout/', djoser_view.TokenDestroyView.as_view(), name='logout'),
 ]
